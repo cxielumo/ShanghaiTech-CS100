@@ -5,16 +5,20 @@ static Direction effectiveDirection(const Snake *snake, Direction requested) {
     if (requested < DIR_UP || requested >= DIRECTION_COUNT) {
         return snake->m_direction;
     }
-    if (snake->m_length > 1 &&
-        (requested + DIRECTION_COUNT / 2) % DIRECTION_COUNT == snake->m_direction) {
-        return snake->m_direction;
+    if (snake->m_length > 1) {
+        if ((requested == DIR_UP && snake->m_direction == DIR_DOWN) ||
+            (requested == DIR_DOWN && snake->m_direction == DIR_UP) ||
+            (requested == DIR_LEFT && snake->m_direction == DIR_RIGHT) ||
+            (requested == DIR_RIGHT && snake->m_direction == DIR_LEFT)) {
+            return snake->m_direction;
+        }
     }
     return requested;
 }
 
 bool snakeInit(Snake *snake, int rows, int cols, size_t length) {
     *snake = (Snake){0};
-    if (rows < MIN_BOARD_SIZE || cols < MIN_BOARD_SIZE || length == 0 ||
+    if (rows < MIN_BOARD_SIZE || cols < MIN_BOARD_SIZE || length < 1 ||
         length > (size_t)(cols - 2 * BOARD_WALL_THICKNESS)) {
         return false;
     }
@@ -22,16 +26,16 @@ bool snakeInit(Snake *snake, int rows, int cols, size_t length) {
     snake->m_cols = cols;
     snake->m_direction = DIR_RIGHT;
     int headCol = cols / 2;
-    if ((size_t)headCol < length) {
+    if (headCol < (int)length) {
         headCol = (int)length;
     }
-    for (size_t i = 0; i < length; ++i) {
+    for (int i = 0; i < (int)length; ++i) {
         SnakeNode *node = malloc(sizeof(*node));
         if (node == NULL) {
             snakeDestroy(snake);
             return false;
         }
-        node->m_pos = (Coord){rows / 2, headCol - (int)length + 1 + (int)i};
+        node->m_pos = (Coord){rows / 2, headCol - (int)length + 1 + i};
         if (snake->m_head == NULL) {
             node->m_next = node;
         } else {
@@ -39,7 +43,7 @@ bool snakeInit(Snake *snake, int rows, int cols, size_t length) {
             snake->m_head->m_next = node;
         }
         snake->m_head = node;
-        ++snake->m_length;
+        snake->m_length += 1;
     }
     return true;
 }

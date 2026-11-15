@@ -1,7 +1,6 @@
 #include "flappy.h"
 
 void advancePipes(Game *game, float dt) {
-    /* Recycling must see the updated positions of every pipe. */
     for (int i = 0; i < PIPE_COUNT; ++i) {
         game->m_pipes[i].m_x -= PIPE_SPEED * dt;
     }
