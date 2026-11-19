@@ -85,16 +85,13 @@ public:
   }
 
   friend bool operator<(const Dynarray &lhs, const Dynarray &rhs) {
-    if (lhs.empty() || rhs.empty())
-      return lhs.size_ < rhs.size_;
     return std::lexicographical_compare(lhs.data_, lhs.data_ + lhs.size_,
                                         rhs.data_, rhs.data_ + rhs.size_);
   }
 
   friend bool operator==(const Dynarray &lhs, const Dynarray &rhs) {
-    return lhs.size_ == rhs.size_ &&
-           (lhs.empty() ||
-            std::equal(lhs.data_, lhs.data_ + lhs.size_, rhs.data_));
+    return std::equal(lhs.data_, lhs.data_ + lhs.size_,
+                      rhs.data_, rhs.data_ + rhs.size_);
   }
 
   friend bool operator<=(const Dynarray &lhs, const Dynarray &rhs) {
